@@ -329,6 +329,7 @@ results/             metrics, graphs, decision records (generated)
 models/              saved Random Forest models, one folder per variant (generated)
 data/                raw and processed data (generated, not in git)
 DEVELOPMENT_STATUS.md  progress log, findings and known limitations
+LICENSE              MIT licence for the code (the dataset is not covered)
 docs/DEMO.md         10-minute demonstration script and likely panel questions
 ```
 
@@ -366,7 +367,11 @@ docs/DEMO.md         10-minute demonstration script and likely panel questions
 * Add a dry-run integration with a cloud provider (read-only first; never automatic changes without approval).
 * Evaluate on more machines, other traces and with a replay simulator that measures the *outcome* of decisions.
 
-## 19. Acknowledgement and data licence
+## 19. Licence, data and acknowledgement
 
-Workload data: Alibaba Cluster Trace 2018, provided by Alibaba for research; see the trace repository for its terms and
-how to cite it. This project's code is a student capstone prototype.
+**Code:** released under the MIT licence; see the [`LICENSE`](LICENSE) file. This is a student capstone prototype and
+comes with no warranty.
+
+**Data:** the Alibaba Cluster Trace 2018 is **not** part of this repository and is **not** covered by the MIT licence.
+It is provided by Alibaba for research and keeps its own terms; see the trace repository
+(<https://github.com/alibaba/clusterdata>) for those terms and for how to cite it.
