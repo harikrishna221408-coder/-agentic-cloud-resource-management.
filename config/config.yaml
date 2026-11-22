@@ -1,0 +1,17 @@
+# Central configuration. Dataset: Alibaba Cluster Trace 2018 (machine_usage + machine_meta).
+paths:
+  raw_usage: data/raw/machine_usage.csv
+  raw_meta: data/raw/machine_meta.csv
+  selected_usage: data/processed/selected_machine_usage.csv
+  forecast_dataset: data/processed/final_forecasting_dataset.csv
+data:
+  top_n_machines: 20        # machines with the most observations (as in the original notebook)
+  max_time_gap_seconds: 60  # keep rows whose input gap AND target gap are <= 60 s
+  chunk_size: 500000
+  train_fraction: 0.80      # chronological split, per machine
+forecast:
+  # Which Random Forest the agents, the single-machine workflow and the dashboard use.
+  #   notebook       the original 7 features (CPU/memory lag 1-3 + input gap); the current value is NOT an input
+  #   current_value  the same 7 features + the current CPU and memory (9 features)
+  # Both variants are always trained and evaluated side by side.
+  active_variant: current_value

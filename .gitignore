@@ -1,0 +1,9 @@
+data/raw/
+data/processed/
+__pycache__/
+.pytest_cache/
+*.pyc
+models/**/*.joblib
+results/metrics/test_predictions.csv
+data/*.log
+.coverage

@@ -1,0 +1,4 @@
+strategy_a,strategy_b,agreement,n
+original,improved,0.8,20
+original,cost_aware,0.5,20
+improved,cost_aware,0.7,20

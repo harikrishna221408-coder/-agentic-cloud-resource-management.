@@ -1,0 +1,4 @@
+agent,SCALE_UP,SCALE_DOWN,MAINTAIN
+resource,8,8,4
+performance,3,14,3
+cost,0,15,5

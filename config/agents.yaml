@@ -1,0 +1,50 @@
+# Agent configuration: thresholds, pricing and policies.
+# Thresholds were chosen from the real data distribution (test-set predictions, 20 machines):
+#   memory is ~91% on every machine (p5=84, p95=96), so the notebook's 85% memory limit flags everything.
+#   CPU is the differentiating signal (p50=38, p95=60, p99=81).
+
+action_step_fraction: 0.25     # SCALE_UP adds 25% capacity, SCALE_DOWN removes 25% (simulated)
+
+resource_agent:
+  cpu_high: 80          # predicted/current CPU >= this -> pressure
+  cpu_low: 25           # current AND predicted CPU < this -> possibly over-allocated
+  memory_high: 95       # memory >= this -> pressure (memory baseline is ~91%)
+  memory_low: 85        # memory < this counts as spare memory
+
+performance_agent:
+  # Forecast uncertainty added to predictions = test RMSE of the ACTIVE forecast model
+  # ("Random Forest + current value" in results/metrics/forecasting_comparison.csv: CPU 4.3244, memory 0.6423).
+  # Update these if the forecast model is retrained (a test checks they still match the saved results).
+  cpu_margin: 4.32
+  memory_margin: 0.64
+  cpu_medium_risk: 70   # upper-bound CPU >= 70 -> medium risk
+  cpu_high_risk: 85     # upper-bound CPU >= 85 -> high risk
+  memory_medium_risk: 96
+  memory_high_risk: 98
+  max_post_scale_down_cpu: 70   # after removing capacity, projected CPU must stay below this
+
+cost_agent:
+  pricing_source: SIMULATED          # NOT real cloud prices. Replace with verified prices if available.
+  vcpu_hourly_price: 0.04            # simulated currency units per vCPU-hour
+  memory_gb_hourly_price: 0.005      # simulated currency units per GB-hour
+  default_vcpus: 96                  # used if machine metadata has no cpu_num (trace: all machines have 96)
+  simulated_memory_gb: 256           # ASSUMPTION: trace mem_size is normalised (100), not GB
+  budget_per_machine_hour: 6.0       # ASSUMPTION: cap per machine per hour (~17% above baseline cost 5.12)
+  low_utilisation_cpu: 30            # predicted CPU below this -> spend is mostly wasted
+  min_saving_per_hour: 0.5           # ignore savings smaller than this
+
+security_agent:
+  # Resource-management POLICY checks only. This is not a cybersecurity threat-detection system.
+  allowed_statuses: [USING]          # machine status (from machine_meta) must be one of these
+  scale_down_max_memory: 93          # block SCALE_DOWN if predicted memory >= this
+  max_post_scale_down_cpu: 75        # block SCALE_DOWN if projected CPU after the change >= this
+  max_step_fraction: 0.5             # configured scaling step above this needs review
+  spike_cpu_delta: 25                # |predicted - current| CPU jump >= this -> manual review
+  protected_machines: []             # any change to these needs explicit review
+
+coordinators:
+  cost_aware:
+    # A SCALE_UP that exceeds the budget is still allowed when the forecast upper bound is critical
+    # (Performance Agent upper bounds, i.e. prediction + forecast error margin).
+    critical_upper_cpu: 90
+    critical_upper_memory: 98

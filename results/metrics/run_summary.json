@@ -1,0 +1,32 @@
+{
+  "run_id": "20261122T150608Z-3c637f",
+  "finished_utc": "2026-11-22T15:07:37+00:00",
+  "machines": 20,
+  "strategies": [
+    "original",
+    "improved",
+    "cost_aware"
+  ],
+  "decisions_per_strategy": 20,
+  "explanation_or_trace_problems": 0,
+  "sample_size_for_sensitivity": 2000,
+  "action_counts": {
+    "original": {
+      "SCALE_UP": 8,
+      "SCALE_DOWN": 4,
+      "MAINTAIN": 8
+    },
+    "improved": {
+      "SCALE_UP": 6,
+      "SCALE_DOWN": 6,
+      "MAINTAIN": 8
+    },
+    "cost_aware": {
+      "SCALE_UP": 0,
+      "SCALE_DOWN": 6,
+      "MAINTAIN": 14
+    }
+  },
+  "pricing_source": "SIMULATED",
+  "seconds": 89.1
+}

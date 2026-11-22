@@ -1,0 +1,4 @@
+,original,improved,cost_aware
+SCALE_UP,8,6,0
+SCALE_DOWN,4,6,6
+MAINTAIN,8,8,14
