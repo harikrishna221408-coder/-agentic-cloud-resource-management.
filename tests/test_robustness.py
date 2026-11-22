@@ -153,6 +153,11 @@ def test_security_restriction_is_never_overridden_by_any_strategy():
 REAL = Path(__file__).resolve().parents[1]
 needs_real = pytest.mark.skipif(not (REAL / "results" / "decisions" / "decisions_improved.jsonl").exists(),
                                 reason="real run results not present")
+# These also need files that are NOT in git (large / regenerable): run `python -m src.app run` to create them.
+needs_real_data = pytest.mark.skipif(
+    not ((REAL / "results" / "metrics" / "test_predictions.csv").exists()
+         and (REAL / "data" / "processed" / "final_forecasting_dataset.csv").exists()),
+    reason="test predictions / processed data not present (not stored in git; run python -m src.app run)")
 
 
 @needs_real
@@ -172,6 +177,7 @@ def test_real_results_every_machine_has_one_explained_traceable_decision(strateg
 
 
 @needs_real
+@needs_real_data
 def test_real_results_decisions_trace_to_forecast_rows():
     from src import dashboard_data as dd
     pred = dd.load_test_predictions(REAL).set_index(["machine_id", "time_stamp"])
@@ -183,6 +189,7 @@ def test_real_results_decisions_trace_to_forecast_rows():
 
 
 @needs_real
+@needs_real_data
 def test_real_forecast_metrics_match_a_fresh_recomputation():
     from src import dashboard_data as dd
     from src.forecasting.evaluation import mae_rmse
@@ -196,6 +203,7 @@ def test_real_forecast_metrics_match_a_fresh_recomputation():
 
 
 @needs_real
+@needs_real_data
 def test_real_split_is_chronological_per_machine():
     import pandas as pd
     from src.data.preprocessing import chronological_split

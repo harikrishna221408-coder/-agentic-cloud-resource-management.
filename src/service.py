@@ -39,8 +39,11 @@ class MachineStore:
     def from_project(cls, root=None):
         root = Path(root) if root else ROOT
         cfg = load_config()
-        usage = pd.read_csv(root / cfg["paths"]["selected_usage"],
-                            usecols=["machine_id", "time_stamp", "cpu_util_percent", "mem_util_percent"])
+        usage_path = root / cfg["paths"]["selected_usage"]
+        if not usage_path.exists():
+            raise FileNotFoundError(f"processed data not found: {usage_path}. Run `python -m src.app run` first "
+                                    f"(after scripts/download_data.py if the raw data is missing).")
+        usage = pd.read_csv(usage_path, usecols=["machine_id", "time_stamp", "cpu_util_percent", "mem_util_percent"])
         meta_path = root / cfg["paths"]["raw_meta"]
         meta = None
         if meta_path.exists():

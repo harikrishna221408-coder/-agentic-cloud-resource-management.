@@ -206,3 +206,28 @@ def test_loaders_read_a_finished_run(project):
     assert dd.load_usage(root, machines=["m_1"])["machine_id"].unique().tolist() == ["m_1"]
     assert any(p.name == "decision_distribution.png" for p in dd.list_graphs(root))
     assert dd.list_graphs(root / "nope") == []
+
+
+# ---------- first-run experience (found by testing a fresh clone: no data downloaded yet) ----------
+def test_cli_without_data_explains_what_to_do_and_exits_1(tmp_path, capsys):
+    assert app.main(["run"], root=tmp_path) == 1
+    err = capsys.readouterr().err
+    assert err.startswith("error:") and "download_data.py" in err and "Traceback" not in err
+
+
+@pytest.mark.parametrize("argv", [["machines"], ["analyze", "m_1"]])
+def test_cli_machines_and_analyze_without_processed_data_explain_the_fix(argv, tmp_path, capsys):
+    assert app.main(argv, root=tmp_path) == 1
+    err = capsys.readouterr().err
+    assert "processed data not found" in err and "python -m src.app run" in err and "Traceback" not in err
+
+
+def test_cli_run_with_skipped_stages_but_no_outputs_still_gives_a_hint(tmp_path, capsys):
+    assert app.main(["run", "--skip-data", "--skip-train"], root=tmp_path) == 1
+    err = capsys.readouterr().err
+    assert err.startswith("error:") and "python -m src.app run" in err
+
+
+def test_machine_store_from_project_missing_data_message(tmp_path):
+    with pytest.raises(FileNotFoundError, match="python -m src.app run"):
+        MachineStore.from_project(tmp_path)

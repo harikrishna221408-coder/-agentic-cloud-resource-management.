@@ -122,7 +122,17 @@ def main(argv=None, root=None):
     a.add_argument("--index", type=int, default=None, help="row index in the machine's history (default: latest)")
     sub.add_parser("machines", help="list machines")
     args = ap.parse_args(argv)
+    try:
+        return _dispatch(args, root)
+    except FileNotFoundError as e:       # a missing input is a normal first-run situation: explain it, no traceback
+        msg = str(e)
+        if "Run" not in msg:
+            msg += " (Run `python -m src.app run` first; run scripts/download_data.py before that if the raw data is missing.)"
+        print(f"error: {msg}", file=sys.stderr)
+        return 1
 
+
+def _dispatch(args, root):
     if args.cmd == "run":
         print(json.dumps(run_all(root, skip_data=args.skip_data, skip_train=args.skip_train, n_sample=args.sample), indent=2))
         return 0

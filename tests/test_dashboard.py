@@ -126,11 +126,11 @@ def test_forecasting_page_shows_computed_findings_for_both_resources(at):
     assert any("one-step baseline" in c.value for c in at.caption)
 
 
-def test_friendly_error_when_results_are_missing(tmp_path):
+def test_friendly_error_when_results_are_missing(tmp_path, monkeypatch):
+    monkeypatch.setenv("AGENTIC_ROOT", str(tmp_path))   # monkeypatch restores the previous value afterwards
     a = start(tmp_path)
     assert not a.exception
     assert any("Results are missing" in e.value for e in a.error)
-    os.environ.pop("AGENTIC_ROOT", None)
 
 
 # ---------- chart builders ----------
